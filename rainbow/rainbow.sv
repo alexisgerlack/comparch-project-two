@@ -1,25 +1,25 @@
-// Fade
+// rainbow
 
-module fade #(
-    //number of clock ticks until change duty cycle
+module rainbow #(
     parameter INC_DEC_INTERVAL = 12000,     // CLK frequency is 12MHz, so 12,000 cycles is 1ms
-    parameter INC_DEC_MAX = 200,            // Transition to next state after 200 increments / decrements, which is 0.2s
-    // how much do we add to duty cycle
+    parameter INC_DEC_MAX = 1000,            // Transition to next state after 1000/6 increments which is a 6th of a second
     parameter PWM_INTERVAL = 1200,          // CLK frequency is 12MHz, so 1,200 cycles is 100us
     parameter INC_DEC_VAL = PWM_INTERVAL / INC_DEC_MAX
 )(
-    input logic clk, 
+    input logic clk,
     output logic [$clog2(PWM_INTERVAL) - 1:0] pwm_value
 );
 
     // Define state variable values
-    // What is the value we are increasing to? what is the value we are decreasing to?
-    localparam PWM_INC = 1'b0;
-    localparam PWM_DEC = 1'b1;
+    localparam PWM_INC = 2'b00;
+    localparam PWM_CONT1 = 2'b01;
+    localparam PWM_CONT2 = 2'b10;
+    localparam PWM_DEC = 2'b11;
 
-    // Declare state variables
+    // Declare state variables CHANGE THIS FOR DIFFERENT INSTANCES
     logic current_state = PWM_INC;
     logic next_state;
+    logic last_state;
 
     // Declare variables for timing state transitions
     logic [$clog2(INC_DEC_INTERVAL) - 1:0] count = 0;
@@ -32,17 +32,26 @@ module fade #(
     end
 
     // Register the next state of the FSM
-    always_ff @(posedge time_to_transition)
+    always_ff @(posedge time_to_transition) begin
+        last_state <= current_state;
         current_state <= next_state;
+    end
 
     // Compute the next state of the FSM
     always_comb begin
-        next_state = 1'bx;
+        next_state = 3'bxxx;
         case (current_state)
             PWM_INC:
-                next_state = PWM_DEC;
+                next_state = PWM_CONT1;
+            PWM_CONT1:
+                next_state = PWM_CONT2;
+            PWM_CONT2:
+                if (last_state == PWM_INC)
+                    next_state = PWM_DEC;
+                else
+                    next_state = PWM_INC;
             PWM_DEC:
-                next_state = PWM_INC;
+                next_state = PWM_CONT1;
         endcase
     end
 
@@ -63,6 +72,10 @@ module fade #(
         case (current_state)
             PWM_INC:
                 pwm_value <= pwm_value + INC_DEC_VAL;
+            PWM_CONT1:
+                pwm_value <= pwm_value;
+            PWM_CONT2:
+                pwm_value <= pwm_value;
             PWM_DEC:
                 pwm_value <= pwm_value - INC_DEC_VAL;
         endcase
