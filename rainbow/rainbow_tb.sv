@@ -4,12 +4,13 @@
 module rainbow_tb;
 
     parameter PWM_INTERVAL = 1200;
-
+    parameter INC_DEC_INTERVAL = 12;
     logic clk = 0;
     logic LED;
 
     top # (
-        .PWM_INTERVAL   (PWM_INTERVAL)
+        .PWM_INTERVAL   (PWM_INTERVAL),
+        .INC_DEC_INTERVAL(INC_DEC_INTERVAL)
     ) u0 (
         .clk            (clk),
         .LED            (LED)
@@ -18,7 +19,7 @@ module rainbow_tb;
     initial begin
         $dumpfile("rainbow.vcd"); //system functions - makes a file to save signals
         $dumpvars(0, rainbow_tb); //system functions - 0 save all signals
-        #60000000 //delay 6 million clock ticks
+        #576000 //delay 6 million clock ticks
         $finish; //ends sim
     end
 
