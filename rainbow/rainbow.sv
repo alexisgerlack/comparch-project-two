@@ -1,8 +1,8 @@
 // rainbow
 
 module rainbow #(
-    parameter INC_DEC_INTERVAL = 12000,     // CLK frequency is 12MHz, so 12,000 cycles is 1ms
-    parameter INC_DEC_MAX = 200,            // Transition to next state after a 6th of a second
+    parameter INC_DEC_INTERVAL = 1200,     // CLK frequency is 12MHz, so 12,000 cycles is 1ms
+    parameter INC_DEC_MAX = 1200,            // Transition to next state after a 6th of a second
     parameter PWM_INTERVAL = 1200,          // CLK frequency is 12MHz, so 1,200 cycles is 100us
     parameter INC_DEC_VAL = PWM_INTERVAL / INC_DEC_MAX
 )(

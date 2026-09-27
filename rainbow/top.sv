@@ -5,8 +5,8 @@
 
 module top #(
     parameter PWM_INTERVAL = 1200,      // CLK frequency is 12MHz, so 1,200 cycles is 100us
-    parameter INC_DEC_INTERVAL = 12000,
-    parameter INC_DEC_MAX = 1000
+    parameter INC_DEC_INTERVAL = 1200,
+    parameter INC_DEC_MAX = 1200
 )(
     input logic     clk,
     output logic    LED
@@ -32,6 +32,6 @@ module top #(
         .pwm_out        (pwm_out)
     );
 
-    assign LED = ~pwm_out;
+    assign LED = pwm_out;
 
 endmodule
