@@ -1,25 +1,29 @@
 // rainbow
+//`include "pwm_states_pkg.sv"
+//import pwm_states_pkg::*;
+
+localparam [1:0] PWM_INC   = 2'b00;
+localparam [1:0] PWM_CONT1 = 2'b01;
+localparam [1:0] PWM_CONT2 = 2'b10;
+localparam [1:0] PWM_DEC   = 2'b11;
 
 module rainbow #(
     parameter INC_DEC_INTERVAL = 1200,     // CLK frequency is 12MHz, so 12,000 cycles is 1ms
     parameter INC_DEC_MAX = 1200,            // Transition to next state after a 6th of a second
     parameter PWM_INTERVAL = 1200,          // CLK frequency is 12MHz, so 1,200 cycles is 100us
-    parameter INC_DEC_VAL = PWM_INTERVAL / INC_DEC_MAX
+    parameter INC_DEC_VAL = PWM_INTERVAL / INC_DEC_MAX,
+    parameter logic [1:0] FIRST_CASE = PWM_INC,
+    parameter logic [1:0] NEXT_CASE  = PWM_DEC,
+    parameter INIT_VALUE = PWM_INTERVAL
 )(
     input logic clk,
     output logic [$clog2(PWM_INTERVAL) - 1:0] pwm_value
 );
 
-    // Define state variable values
-    localparam PWM_INC = 2'b00;
-    localparam PWM_CONT1 = 2'b01;
-    localparam PWM_CONT2 = 2'b10;
-    localparam PWM_DEC = 2'b11;
-
-    // Declare state variables CHANGE THIS FOR DIFFERENT INSTANCES
-    logic [1:0] current_state = PWM_INC;
+    // Initialize state variables
+    logic [1:0] current_state = FIRST_CASE;
     logic [1:0] next_state;
-    logic [1:0] next_delta_state = PWM_DEC;
+    logic [1:0] next_delta_state = NEXT_CASE;
 
     // Declare variables for timing state transitions
     logic [$clog2(INC_DEC_INTERVAL) - 1:0] count = 0;
@@ -28,7 +32,9 @@ module rainbow #(
     logic time_to_transition = 1'b0;
 
     initial begin
-        pwm_value = 0;
+        //initializing different starting values for pwm_value
+        //the onlt color that starts at 0 is red
+        pwm_value = INIT_VALUE;
     end
 
     // Register the next state of the FSM
