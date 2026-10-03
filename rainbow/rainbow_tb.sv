@@ -14,8 +14,6 @@ module rainbow_tb;
     logic RGB_R;
     logic RGB_G;
     logic RGB_B;
-    int  cyc       = 0;
-    int  low_count = 0;
     real expect_r  = 0.0;   // what pwm_value says it should be
     real expect_g  = 0.0;
     real expect_b  = 0.0;
