@@ -6,18 +6,14 @@ module rainbow_tb;
     parameter PWM_INTERVAL = 1200;
     parameter INC_DEC_INTERVAL = 1200;
     parameter CLK_HALF_PERIOD = 12;
-    parameter SIM_TICKS = 1_000_000;
-    parameter INC_DEC_MAX = 120;
+    parameter SIM_TICKS = 8640000;
+    parameter INC_DEC_MAX = 1200;
 
     //initializing tracked vals
     logic clk = 0;
     logic RGB_R;
     logic RGB_G;
     logic RGB_B;
-
-    logic [15:0] win = 0;
-    logic [15:0] hi_R = 0, hi_G = 0, hi_B = 0;
-    logic [15:0] duty_R = 0, duty_G = 0, duty_B = 0;
 
     top # (
         .PWM_INTERVAL   (PWM_INTERVAL),
@@ -28,21 +24,14 @@ module rainbow_tb;
         .RGB_G          (RGB_G),
         .RGB_B          (RGB_B)
     );
-    always @(posedge clk) begin // turns pwm into brightness by finding high points/pwm cycle
-        if (win == PWM_INTERVAL-1) begin
-            duty_R <= hi_R + RGB_R;
-            duty_G <= hi_G + RGB_G;
-            duty_B <= hi_B + RGB_B;
-            hi_R <= 0; hi_G <= 0; hi_B <= 0;
-            win  <= 0;
-        end else begin
-            hi_R <= hi_R + RGB_R;
-            hi_G <= hi_G + RGB_G;
-            hi_B <= hi_B + RGB_B;
-            win  <= win + 1;
-        end
-    end
     always #(CLK_HALF_PERIOD) clk = ~clk;
+    real analog_voltage = 0.0;
+    real RC = 1000.0; // Adjust time constant to match your PWM frequency
+
+    always @(posedge clk) begin
+        // Simple digital RC low-pass filter approximation
+        analog_voltage <= analog_voltage + ((RGB_B ? 1.0 : 0.0) - analog_voltage) / RC;
+    end
 
     initial begin
         $dumpfile("rainbow.vcd"); //system functions - makes a file to save signals

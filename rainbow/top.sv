@@ -1,4 +1,4 @@
-`include "rainbow.sv"
+`include "rainbow2.sv"
 `include "pwm.sv"
 //`include "pwm_states_pkg.sv"
 //import pwm_states_pkg::*;
@@ -6,7 +6,7 @@
 
 module top #(
     parameter PWM_INTERVAL = 1200,      // CLK frequency is 12MHz, so 1,200 cycles is 100us
-    parameter INC_DEC_INTERVAL = 1200,
+    parameter INC_DEC_INTERVAL = 12000,
     parameter INC_DEC_MAX = 1200 //each state lasts for imc_dec_max * inc_dec_interval
 )(
     input logic     clk,
@@ -29,7 +29,7 @@ module top #(
         .INC_DEC_MAX(INC_DEC_MAX),
         .FIRST_CASE     (PWM_CONT2),
         .NEXT_CASE      (PWM_DEC),
-        .INIT_VALUE     (0) //this is because red is the only one that starts fully on
+        .INIT_VALUE     (PWM_INTERVAL) //this is because red is the only one that starts fully on
     ) ur1 (
         .clk            (clk),
         .pwm_value      (pwm_value_r)
@@ -49,7 +49,8 @@ module top #(
         .INC_DEC_INTERVAL(INC_DEC_INTERVAL),
         .INC_DEC_MAX(INC_DEC_MAX),
         .FIRST_CASE     (PWM_INC),
-        .NEXT_CASE      (PWM_DEC)
+        .NEXT_CASE      (PWM_DEC),
+        .INIT_VALUE     (0)
     ) ug1 (
         .clk            (clk),
         .pwm_value      (pwm_value_g)
@@ -69,7 +70,8 @@ module top #(
         .INC_DEC_INTERVAL(INC_DEC_INTERVAL),
         .INC_DEC_MAX(INC_DEC_MAX),
         .FIRST_CASE     (PWM_CONT1),
-        .NEXT_CASE      (PWM_INC)
+        .NEXT_CASE      (PWM_INC),
+        .INIT_VALUE     (0)
     ) ub1 (
         .clk            (clk),
         .pwm_value      (pwm_value_b)
