@@ -4,10 +4,10 @@ localparam [1:0] PWM_CONT2 = 2'b10;
 localparam [1:0] PWM_DEC   = 2'b11;
 
 module rainbow #(
-    parameter INC_DEC_INTERVAL = 1200,     // how many clock ticks until it changes brightness
-    parameter INC_DEC_MAX = 12000,            // how many inc/dec ticks until it changes state
+    parameter INC_DEC_INTERVAL = 5000,      // how many clock ticks until it changes brightness
+    parameter INC_DEC_MAX = 400,            // how many inc/dec ticks until it changes state
     parameter PWM_INTERVAL = 1200,          // CLK frequency is 12MHz, so 1,200 cycles is 100us
-    parameter INC_DEC_VAL = PWM_INTERVAL / INC_DEC_MAX,
+    parameter INC_DEC_VAL = PWM_INTERVAL / INC_DEC_MAX, //needs to be 2million because there are 6 states
     parameter logic [1:0] FIRST_CASE = PWM_INC,
     parameter logic [1:0] NEXT_CASE  = PWM_DEC,
     parameter INIT_VALUE = PWM_INTERVAL

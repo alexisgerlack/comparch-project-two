@@ -6,8 +6,8 @@
 
 module top #(
     parameter PWM_INTERVAL = 1200,      // CLK frequency is 12MHz, so 1,200 cycles is 100us
-    parameter INC_DEC_INTERVAL = 12000,
-    parameter INC_DEC_MAX = 1200 //each state lasts for imc_dec_max * inc_dec_interval
+    parameter INC_DEC_INTERVAL = 5000,
+    parameter INC_DEC_MAX = 400 //each state lasts for imc_dec_max * inc_dec_interval
 )(
     input logic     clk,
     output logic    RGB_R,

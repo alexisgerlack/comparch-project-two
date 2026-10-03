@@ -4,16 +4,21 @@
 module rainbow_tb;
 
     parameter PWM_INTERVAL = 1200;
-    parameter INC_DEC_INTERVAL = 1200;
+    parameter INC_DEC_INTERVAL = 5000;
     parameter CLK_HALF_PERIOD = 12;
-    parameter SIM_TICKS = 8640000;
-    parameter INC_DEC_MAX = 1200;
+    parameter SIM_TICKS = 12000000;
+    parameter INC_DEC_MAX = 400;
 
     //initializing tracked vals
     logic clk = 0;
     logic RGB_R;
     logic RGB_G;
     logic RGB_B;
+    int  cyc       = 0;
+    int  low_count = 0;
+    real expect_r  = 0.0;   // what pwm_value says it should be
+    real expect_g  = 0.0;
+    real expect_b  = 0.0;
 
     top # (
         .PWM_INTERVAL   (PWM_INTERVAL),
@@ -25,12 +30,11 @@ module rainbow_tb;
         .RGB_B          (RGB_B)
     );
     always #(CLK_HALF_PERIOD) clk = ~clk;
-    real analog_voltage = 0.0;
-    real RC = 1000.0; // Adjust time constant to match your PWM frequency
 
-    always @(posedge clk) begin
-        // Simple digital RC low-pass filter approximation
-        analog_voltage <= analog_voltage + ((RGB_B ? 1.0 : 0.0) - analog_voltage) / RC;
+    always @(posedge clk)begin
+        expect_r <= 100.0 * u0.pwm_value_r / PWM_INTERVAL;
+        expect_g <= 100.0 * u0.pwm_value_g / PWM_INTERVAL;
+        expect_b <= 100.0 * u0.pwm_value_b / PWM_INTERVAL;
     end
 
     initial begin
